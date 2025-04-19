@@ -1,0 +1,6 @@
+@DotNetCore_Angular_SocialMedia_App_HostAddress = http://localhost:5242
+
+GET {{DotNetCore_Angular_SocialMedia_App_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
