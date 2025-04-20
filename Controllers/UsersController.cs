@@ -1,21 +1,22 @@
 ﻿using DotNetCore_Angular_SocialMedia_App.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNetCore_Angular_SocialMedia_App.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class UserController : ControllerBase
+    public class UsersController : BaseApiController
     {
 
         private readonly Data.AppDbContext _context;
-        public UserController(Data.AppDbContext context)
+        public UsersController(Data.AppDbContext context)
         {
             _context = context;
         }
 
         [HttpGet]
+        [AllowAnonymous]
+        [ActionName("Users")]
         public async Task<ActionResult<List<AppUser>>> GetUsers()
         {
             var users = await _context.Users.ToListAsync();
@@ -23,6 +24,7 @@ namespace DotNetCore_Angular_SocialMedia_App.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<AppUser>> GetUser(int id)
         {
             var user = await _context.Users.FindAsync(id);
@@ -31,6 +33,7 @@ namespace DotNetCore_Angular_SocialMedia_App.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<ActionResult<AppUser>> CreateUser(AppUser user)
         {
             _context.Users.Add(user);
@@ -38,7 +41,9 @@ namespace DotNetCore_Angular_SocialMedia_App.Controllers
             return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
         }
 
+
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> UpdateUser(int id, AppUser user)
         {
             if (id != user.Id) return BadRequest();
@@ -56,6 +61,7 @@ namespace DotNetCore_Angular_SocialMedia_App.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteUser(int id)
         {
             var user = await _context.Users.FindAsync(id);

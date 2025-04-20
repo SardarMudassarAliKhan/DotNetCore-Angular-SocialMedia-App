@@ -1,4 +1,7 @@
 
+using DotNetCore_Angular_SocialMedia_App.Extensions;
+using DotNetCore_Angular_SocialMedia_App.Interface;
+using DotNetCore_Angular_SocialMedia_App.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNetCore_Angular_SocialMedia_App
@@ -11,8 +14,8 @@ namespace DotNetCore_Angular_SocialMedia_App
 
             // Add services to the container.
 
-            builder.Services.AddDbContext<Data.AppDbContext>(options =>
-                options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+            builder.Services.AddApplicationServices(builder.Configuration);
+            builder.Services.AddIdentityServices(builder.Configuration);
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -30,8 +33,11 @@ namespace DotNetCore_Angular_SocialMedia_App
 
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
+            // Enable CORS for all origins, methods, and headers
+            app.UseCors("AllowAllOrigins");
 
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.MapControllers();
 
