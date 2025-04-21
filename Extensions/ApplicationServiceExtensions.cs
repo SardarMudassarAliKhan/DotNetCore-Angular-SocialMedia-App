@@ -15,7 +15,15 @@ namespace DotNetCore_Angular_SocialMedia_App.Extensions
             {
                 opt.UseSqlite(config.GetConnectionString("DefaultConnection"));
             });
-            services.AddCors();
+            services.AddCors(setupAction =>
+            {
+                setupAction.AddPolicy("AllowAllOrigins", builder =>
+                {
+                    builder.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                });
+            });
             services.AddScoped<ITokenService, TokenService>();
 
             return services;
