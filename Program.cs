@@ -1,4 +1,5 @@
 
+using API;
 using DotNetCore_Angular_SocialMedia_App.Extensions;
 using DotNetCore_Angular_SocialMedia_App.Interface;
 using DotNetCore_Angular_SocialMedia_App.Services;
@@ -32,6 +33,8 @@ namespace DotNetCore_Angular_SocialMedia_App
             }
 
             app.UseHttpsRedirection();
+
+            app.UseMiddleware<ExceptionMiddleware>();
 
             // Enable CORS for all origins, methods, and headers
             app.UseCors("AllowAllOrigins");
