@@ -1,15 +1,14 @@
 
 using API;
+using DotNetCore_Angular_SocialMedia_App.Data;
 using DotNetCore_Angular_SocialMedia_App.Extensions;
-using DotNetCore_Angular_SocialMedia_App.Interface;
-using DotNetCore_Angular_SocialMedia_App.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNetCore_Angular_SocialMedia_App
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +42,20 @@ namespace DotNetCore_Angular_SocialMedia_App
             app.UseAuthorization();
 
             app.MapControllers();
+
+            using var scope = app.Services.CreateScope();
+            var services = scope.ServiceProvider;
+            try
+            {
+                var context = services.GetRequiredService<AppDbContext>();
+                await context.Database.MigrateAsync();
+                await Seed.SeedUsers(context);
+            }
+            catch (Exception ex)
+            {
+                var logger = services.GetRequiredService<ILogger<Program>>();
+                logger.LogError(ex, "An error occurred during migration");
+            }
 
             app.Run();
         }
