@@ -1,4 +1,5 @@
 ﻿using DotNetCore_Angular_SocialMedia_App.Data;
+using DotNetCore_Angular_SocialMedia_App.Helpers;
 using DotNetCore_Angular_SocialMedia_App.Interface;
 using DotNetCore_Angular_SocialMedia_App.Services;
 using Microsoft.EntityFrameworkCore;
@@ -26,7 +27,9 @@ namespace DotNetCore_Angular_SocialMedia_App.Extensions
             });
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IPhotoService, PhotoService>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
 
             return services;
         }
