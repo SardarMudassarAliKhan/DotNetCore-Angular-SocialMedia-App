@@ -2,7 +2,6 @@
 using DotNetCore_Angular_SocialMedia_App.DTOs;
 using DotNetCore_Angular_SocialMedia_App.Entities;
 using DotNetCore_Angular_SocialMedia_App.Extensions;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace DotNetCore_Angular_SocialMedia_App.Helpers
 {
