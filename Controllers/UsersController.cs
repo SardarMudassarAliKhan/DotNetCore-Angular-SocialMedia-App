@@ -2,6 +2,7 @@
 using DotNetCore_Angular_SocialMedia_App.DTOs;
 using DotNetCore_Angular_SocialMedia_App.Entities;
 using DotNetCore_Angular_SocialMedia_App.Extensions;
+using DotNetCore_Angular_SocialMedia_App.Helpers;
 using DotNetCore_Angular_SocialMedia_App.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,9 +14,12 @@ namespace DotNetCore_Angular_SocialMedia_App.Controllers
     IPhotoService photoService) : BaseApiController
     {
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers([FromQuery] UserParams userParams)
         {
-            var users = await userRepository.GetMembersAsync();
+            userParams.CurrentUsername = User.GetUsername();
+            var users = await userRepository.GetMembersAsync(userParams);
+
+            Response.AddPaginationHeader(users);
 
             return Ok(users);
         }

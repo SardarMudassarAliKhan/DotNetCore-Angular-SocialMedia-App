@@ -7,29 +7,33 @@ using System.Text;
 
 namespace DotNetCore_Angular_SocialMedia_App.Services
 {
-    public class TokenService(IConfiguration config) : ITokenService
+    public class TokenService : ITokenService
     {
+        private readonly SymmetricSecurityKey _key;
+        public TokenService(IConfiguration config)
+        {
+            _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["TokenKey"]));
+        }
+
         public string CreateToken(AppUser user)
         {
-            var tokenKey = config["TokenKey"] ?? throw new Exception("Cannot access tokenKey from appsettings");
-            if (tokenKey.Length < 64) throw new Exception("Your tokenKey needs to be longer");
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey));
-
             var claims = new List<Claim>
-        {
-            new(ClaimTypes.NameIdentifier, user.UserName)
-        };
+            {
+                new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName),
+            };
 
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+            var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = DateTime.Now.AddDays(7),
                 SigningCredentials = creds
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
+
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
             return tokenHandler.WriteToken(token);

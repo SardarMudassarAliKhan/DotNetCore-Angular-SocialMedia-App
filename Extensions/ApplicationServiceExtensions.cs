@@ -26,6 +26,7 @@ namespace DotNetCore_Angular_SocialMedia_App.Extensions
                 });
             });
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<LogUserActivity>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IPhotoService, PhotoService>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

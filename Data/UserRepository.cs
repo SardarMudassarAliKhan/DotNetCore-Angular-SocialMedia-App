@@ -2,11 +2,13 @@
 using AutoMapper.QueryableExtensions;
 using DotNetCore_Angular_SocialMedia_App.DTOs;
 using DotNetCore_Angular_SocialMedia_App.Entities;
+using DotNetCore_Angular_SocialMedia_App.Helpers;
 using DotNetCore_Angular_SocialMedia_App.Interface;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNetCore_Angular_SocialMedia_App.Data
 {
+
     public class UserRepository(AppDbContext context, IMapper mapper) : IUserRepository
     {
         public async Task<MemberDto?> GetMemberAsync(string username)
@@ -17,11 +19,31 @@ namespace DotNetCore_Angular_SocialMedia_App.Data
                 .SingleOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<MemberDto>> GetMembersAsync()
+        public async Task<PagedList<MemberDto>> GetMembersAsync(UserParams userParams)
         {
-            return await context.Users
-                .ProjectTo<MemberDto>(mapper.ConfigurationProvider)
-                .ToListAsync();
+            var query = context.Users.AsQueryable();
+
+            query = query.Where(x => x.UserName != userParams.CurrentUsername);
+
+            if (userParams.Gender != null)
+            {
+                query = query.Where(x => x.Gender == userParams.Gender);
+            }
+
+            var minDob = DateOnly.FromDateTime(DateTime.Today.AddYears(-userParams.MaxAge - 1));
+            var maxDob = DateOnly.FromDateTime(DateTime.Today.AddYears(-userParams.MinAge));
+
+            query = query.Where(x => x.DateOfBirth >= minDob && x.DateOfBirth <= maxDob);
+
+            query = userParams.OrderBy switch
+            {
+                "created" => query.OrderByDescending(x => x.Created),
+                _ => query.OrderByDescending(x => x.LastActive)
+            };
+
+            return await PagedList<MemberDto>.CreateAsync(query.ProjectTo<MemberDto>(mapper.ConfigurationProvider),
+                userParams.PageNumber, userParams.PageSize);
+
         }
 
         public async Task<AppUser?> GetUserByIdAsync(int id)

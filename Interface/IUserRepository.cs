@@ -1,5 +1,6 @@
 ﻿using DotNetCore_Angular_SocialMedia_App.DTOs;
 using DotNetCore_Angular_SocialMedia_App.Entities;
+using DotNetCore_Angular_SocialMedia_App.Helpers;
 
 namespace DotNetCore_Angular_SocialMedia_App.Interface
 {
@@ -10,7 +11,7 @@ namespace DotNetCore_Angular_SocialMedia_App.Interface
         Task<IEnumerable<AppUser>> GetUsersAsync();
         Task<AppUser?> GetUserByIdAsync(int id);
         Task<AppUser?> GetUserByUsernameAsync(string username);
-        Task<IEnumerable<MemberDto>> GetMembersAsync();
+        Task<PagedList<MemberDto>> GetMembersAsync(UserParams userParams);
         Task<MemberDto?> GetMemberAsync(string username);
     }
 }
